@@ -59,8 +59,8 @@ A web-based application designed to capture and analyze psychosocial outcomes fo
 
 Currently under active development. Features will be implemented in phases:
 
-1. Basic data collection form ✓
-2. Database integration ✓
+1. Basic data collection form 
+2. Database integration 
 3. Data analysis scripts
 4. Dashboard development
 5. Predictive modeling
