@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from pathlib import Path
 import sys
 from datetime import datetime
@@ -98,6 +99,101 @@ def render_data_entry():
             except Exception as e:
                 st.error(f"Error saving assessment: {str(e)}")
 
+def create_score_trend_plot(df):
+    """Create a line plot showing score trends over time."""
+    fig = go.Figure()
+    
+    metrics = {
+        'social_score': 'Social Interaction',
+        'communication_score': 'Communication',
+        'behavior_score': 'Behavior'
+    }
+    
+    for metric, label in metrics.items():
+        fig.add_trace(
+                go.Scatter(
+                    x=df['assessment_date'],
+                    y=df[metric],
+                    name=label,
+                    mode='lines+markers',
+                    hovertemplate=f"{label}: %{{y:.1f}}<br>Date: %{{x|%Y-%m-%d}}<extra></extra>"
+            )
+        )
+    
+    fig.update_layout(
+        title="Score Trends Over Time",
+        xaxis_title="Assessment Date",
+        yaxis_title="Score",
+        hovermode='x unified',
+        showlegend=True,
+        template="plotly_white"
+    )
+    
+    return fig
+
+def create_radar_chart(latest_scores):
+    """Create a radar chart showing the latest scores."""
+    categories = ['Social Interaction', 'Communication', 'Behavior']
+    values = [
+        latest_scores['social_score'],
+        latest_scores['communication_score'],
+        latest_scores['behavior_score']
+    ]
+    
+    fig = go.Figure(data=go.Scatterpolar(
+        r=values + [values[0]],  # Repeat first value to close the polygon
+        theta=categories + [categories[0]],  # Repeat first category to close the polygon
+        fill='toself',
+        name='Latest Assessment'
+    ))
+    
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 10]
+            )
+        ),
+        showlegend=False,
+        title="Latest Assessment Scores"
+    )
+    
+    return fig
+
+def create_age_distribution_plot(df):
+    """Create a box plot showing score distributions by age group."""
+    df['age_group'] = pd.cut(
+        df['age'],
+        bins=[0, 5, 10, 15, 18],
+        labels=['0-5', '6-10', '11-15', '16-18']
+    )
+    
+    fig = go.Figure()
+    
+    metrics = {
+        'social_score': 'Social Interaction',
+        'communication_score': 'Communication',
+        'behavior_score': 'Behavior'
+    }
+    
+    for metric, label in metrics.items():
+        fig.add_trace(
+            go.Box(
+                x=df['age_group'],
+                y=df[metric],
+                name=label
+            )
+        )
+    
+    fig.update_layout(
+        title="Score Distribution by Age Group",
+        xaxis_title="Age Group",
+        yaxis_title="Score",
+        boxmode='group'
+    )
+    
+    return fig
+
 def render_analytics():
     """Render the analytics dashboard."""
     st.header("Analytics Dashboard")
@@ -143,24 +239,28 @@ def render_analytics():
                     delta=f"{stats[metric]['std']:.2f} σ"
                 )
     
-    # Trends over time
-    st.subheader("Score Trends Over Time")
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # Interactive visualizations
+    tab1, tab2, tab3 = st.tabs(["Trends", "Current Status", "Age Analysis"])
     
-    for metric, label in metrics.items():
-        sns.lineplot(
-            data=df,
-            x='assessment_date',
-            y=metric,
-            label=label,
-            marker='o'
+    with tab1:
+        st.plotly_chart(
+            create_score_trend_plot(df),
+            use_container_width=True
         )
     
-    plt.title("Score Trends Over Time")
-    plt.xlabel("Assessment Date")
-    plt.ylabel("Score")
-    plt.legend()
-    st.pyplot(fig)
+    with tab2:
+        # Get latest assessment for radar chart
+        latest_df = df.sort_values('assessment_date').iloc[-1]
+        st.plotly_chart(
+            create_radar_chart(latest_df),
+            use_container_width=True
+        )
+    
+    with tab3:
+        st.plotly_chart(
+            create_age_distribution_plot(df),
+            use_container_width=True
+        )
     
     # Areas of concern
     st.subheader("Areas of Concern")
