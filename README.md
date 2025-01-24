@@ -71,7 +71,7 @@ Currently under active development. Features will be implemented in phases:
 Assessment Data Entry Dashboard of Outcome Tracker for Neurodiverse Interventions
 ![Data entry](https://github.com/user-attachments/assets/d536c1ac-ccdb-47f1-a239-8ee04f320c0e)
 
-# Analytics
+### Analytics
 Trends
 ![Trends](https://github.com/user-attachments/assets/465aaa0e-9377-499a-8f21-1b2277b278b0)
 
