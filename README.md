@@ -1,6 +1,6 @@
 # Outcome Tracker for Neurodiverse Interventions
 
-A web-based application designed to capture and analyze psychosocial outcomes for neurodiverse children and their families. The application provides data collection, analysis, visualization, and predictive modeling capabilities.
+A web-based application designed to capture and analyze psychosocial outcomes for neurodiverse children. The application provides data collection, analysis, visualization, and predictive modeling capabilities.
 
 ## Features
 
